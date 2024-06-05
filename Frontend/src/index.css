@@ -16,3 +16,54 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.seat-block {
+  /* Your existing styles for seat-block */
+}
+
+.available-seat:hover {
+  background-color: green;
+}
+
+.reserved-seat:hover {
+  background-color: red;
+}
+
+/* Optional: Apply the hoveredLockerColor dynamically */
+.hovered-color {
+  background-color: var(--hoveredLockerColor);
+}
+
+.locker-icon {
+  transition: transform 0.2s ease-in-out;
+}
+
+.seat-block .locker-icon:hover {
+  transform: scale(1.1);
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-5px);
+  }
+
+  50% {
+    transform: translateX(5px);
+  }
+
+  75% {
+    transform: translateX(-5px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.5s;
+}

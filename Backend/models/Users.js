@@ -4,12 +4,16 @@ const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        match : /^\S+@\S+\.\S+$/,
+        match: /^\S+@\S+\.\S+$/,
     },
     password: String,
     firstName: String,
     lastName: String,
-    admin: { type: Boolean, default: false },
+    role: {
+        type: String,
+        enum: ['admin', 'user'],
+        default: 'user'
+    },
     createdAt: {
         type: Date,
         default: Date.now

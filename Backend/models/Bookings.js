@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const BookingSchema = new mongoose.Schema({
 
-   username: {
+    username: {
         type: String,
         required: true
     },
@@ -17,11 +17,7 @@ const BookingSchema = new mongoose.Schema({
     },
     Booking_Status: {
         type: String,
-        enum: ['Approved', 'Cancelled', "Pending Payment", "Renewed"], 
-    },
-    User_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Users'
+        enum: ['Approved', 'Cancelled', "Pending Payment", "Renewed"],
     },
     Locker_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -30,9 +26,13 @@ const BookingSchema = new mongoose.Schema({
     Locker_Status: {
         type: String,
         enum: ['Available', 'Reserved', 'Not Available'],
-        ref : 'Lockers'
+        ref: 'Lockers'
+    },
+    Building_Name: {
+        type: String,
+        enum: ['Tabba', 'Adamjee', 'Student Center', 'Aman CED']
     }
-    });
+});
 
 const Bookings = mongoose.model('Bookings', BookingSchema);
 module.exports = Bookings;

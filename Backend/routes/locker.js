@@ -13,6 +13,18 @@ router.get('/getallLockers', async (req, res) => {
         console.error(error);
     }
 });
+//following gets all available lockers in specific building
+router.get('/getLockersInBuilding', async (req, res) => {
+    try {
+        const lockers = await Lockers.find({ Building_Name: req.query.Building_Name });
+        if (!lockers) return res.json({ msg: 'No Lockers currently available in this building' });
+        //print all lockers availble in the building
+        res.json({ msg: 'Available Lockers Found', data: lockers });
+
+    } catch (error) {
+        console.error(error);
+    }
+});
 //Following will give Locker details of the user, who has owns the locker[another user can't see the locker details of another user]
 router.get("/getLockerWithUser", async (req, res) => {
     try {
@@ -31,11 +43,16 @@ router.get("/getLockerWithUser", async (req, res) => {
         console.error(error)
     }
 });
+//create building api locker 
+
+
 
 /******* below are all the routes that WILL NOT pass through the middleware ********/
 router.use((req, res, next) => {
-    if (!req.user.admin) return res.json({ msg: "Unauthorized. Only admin users can perform this action" })
-    else next()
+    if (req.user && req.user.role === "admin") {
+        next();
+    } else return res.json({ msg: "Unauthorized. Only admin users can perform this action" })
+
 })
 
 /******* below are all the routes that WILL pass through the
@@ -54,13 +71,13 @@ router.get("/getLocker", async (req, res) => {
 
 router.post("/addLocker", async (req, res) => {
     try {
-        const user = await Users.findOne({ username: req.body.username })
-        if (!user) return res.json({ msg: "USER NOT FOUND" })
+        // const user = await Users.findOne({ username: req.body.username })
+        // if (!user) return res.json({ msg: "USER NOT FOUND" })
 
         const existingLocker = await Lockers.findOne({ Locker_num: req.body.Locker_num, Building_Name: req.body.Building_Name })
         if (existingLocker) return res.json({ msg: "Locker Already exists" })
 
-        await Lockers.create({ ...req.body, user: user.userId })
+        await Lockers.create({ ...req.body })
         res.json({ msg: "Locker added successfully", data: Lockers })
 
     } catch (error) {
@@ -83,5 +100,19 @@ router.put('/updatestatus', async (req, res) => {
 }
 );
 
+//get total locker count where locker is available not available and reserved
+
+router.get('/getLockerCount', async (req, res) => {
+    try {
+        const totalLockers = await Lockers.countDocuments();
+        const availableLockers = await Lockers.countDocuments({ Locker_Status: 'Available' });
+        const notAvailableLockers = await Lockers.countDocuments({ Locker_Status: 'Not Available' });
+        const reservedLockers = await Lockers.countDocuments({ Locker_Status: 'Reserved' });
+        res.json({ msg: 'Locker count found', data: { totalLockers, availableLockers, notAvailableLockers, reservedLockers } });
+    } catch (error) {
+        console.error(error);
+    }
+}
+);
 
 module.exports = router;

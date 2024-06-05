@@ -71,16 +71,15 @@ router.post("/login", async (req, res) => {
         const { username, password } = req.body
 
         const user = await Users.findOne({ username })
-        if (!user) return res.json({ msg: "User not found" })
+        if (!user) return res.json({ msg: "Incorrect Username" })
         const passwordCheck = await bcrypt.compare(password, user.password);
         if (!passwordCheck) return res.json({ msg: "Incorrect Password" })
         const token = jwt.sign({
             username,
             userId: user.userId,
             createdAt: new Date(),
-            admin: user.admin,
+            role: user.role,
         }, "MY_SECRET", { expiresIn: "1d" });
-
         res.json({
             msg: "LOGGED IN", token
         })
@@ -90,7 +89,7 @@ router.post("/login", async (req, res) => {
 });
 
 function generateToken() {
-    return crypto.randomBytes(20).toString('hex');
+    return crypto.randomBytes(6).toString('hex');
 }
 
 router.post("/forgotpassword", async (req, res) => {
@@ -105,7 +104,6 @@ router.post("/forgotpassword", async (req, res) => {
         user.resetPasswordToken = resetToken;
         user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
         await user.save();
-        console.log("user has resettoken: ", user.resetPasswordToken); // just for checking
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
